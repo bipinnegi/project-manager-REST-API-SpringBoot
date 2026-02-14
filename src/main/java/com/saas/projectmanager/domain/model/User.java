@@ -3,12 +3,13 @@ package com.saas.projectmanager.domain.model;
 import com.saas.projectmanager.domain.valueobject.Role;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 @Entity
 @Table(name = "users")
 public class User extends BaseEntity {

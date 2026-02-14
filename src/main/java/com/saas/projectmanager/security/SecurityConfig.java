@@ -28,7 +28,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-                // Disable CSRF (because we are using JWT)
+                // Disable CSRF because we are using JWT
                 .csrf(csrf -> csrf.disable())
 
                 // Configure endpoint authorization
