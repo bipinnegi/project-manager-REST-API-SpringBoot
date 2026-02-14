@@ -17,7 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -32,11 +31,12 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthResponse register(RegisterRequest request) {
 
+        // Check if tenant slug already exists
         if (tenantRepository.findBySlug(request.getSlug()).isPresent()) {
             throw new RuntimeException("Tenant with this slug already exists");
         }
 
-
+        // Create Tenant
         Tenant tenant = Tenant.builder()
                 .name(request.getTenantName())
                 .slug(request.getTenantName().toLowerCase().replace(" ", "-"))
@@ -45,6 +45,7 @@ public class AuthServiceImpl implements AuthService {
 
         tenantRepository.save(tenant);
 
+        // Create Owner User
         User user = User.builder()
                 .email(request.getEmail())
                 .name(request.getName())
@@ -56,7 +57,11 @@ public class AuthServiceImpl implements AuthService {
 
         userRepository.save(user);
 
-        String token = jwtService.generateToken(user.getEmail());
+        // 🔥 Generate token WITH tenantId
+        String token = jwtService.generateToken(
+                user.getEmail(),
+                tenant.getId()
+        );
 
         return new AuthResponse(token);
     }
@@ -64,6 +69,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthResponse login(LoginRequest request) {
 
+        // Authenticate using Spring Security
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -74,7 +80,11 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow();
 
-        String token = jwtService.generateToken(user.getEmail());
+        // 🔥 Generate token WITH tenantId
+        String token = jwtService.generateToken(
+                user.getEmail(),
+                user.getTenant().getId()
+        );
 
         return new AuthResponse(token);
     }

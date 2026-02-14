@@ -5,10 +5,10 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import javax.crypto.SecretKey;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Service
@@ -20,27 +20,44 @@ public class JwtService {
     @Value("${jwt.expiration}")
     private long jwtExpiration;
 
-    // Generate token
-    public String generateToken(String username) {
+    /**
+     * Generate JWT token with username and tenantId
+     */
+    public String generateToken(String username, UUID tenantId) {
         return Jwts.builder()
                 .subject(username)
+                .claim("tenantId", tenantId.toString())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .signWith(getSigningKey())
                 .compact();
     }
 
-    // Extract username
+    /**
+     * Extract username (subject)
+     */
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
-    // Extract any claim
+    /**
+     * Extract tenantId from token
+     */
+    public UUID extractTenantId(String token) {
+        String tenantId = extractClaim(token, claims -> claims.get("tenantId", String.class));
+        return UUID.fromString(tenantId);
+    }
+
+    /**
+     * Extract any claim
+     */
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         return claimsResolver.apply(extractAllClaims(token));
     }
 
-    // Validate token
+    /**
+     * Validate token
+     */
     public boolean isTokenValid(String token, String username) {
         return extractUsername(token).equals(username) && !isTokenExpired(token);
     }
