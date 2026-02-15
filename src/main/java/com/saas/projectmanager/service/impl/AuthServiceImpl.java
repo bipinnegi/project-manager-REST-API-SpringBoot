@@ -57,7 +57,7 @@ public class AuthServiceImpl implements AuthService {
 
         userRepository.save(user);
 
-        // 🔥 Generate token WITH tenantId
+        // Generate token WITH tenantId
         String token = jwtService.generateToken(
                 user.getEmail(),
                 tenant.getId()
@@ -80,7 +80,7 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow();
 
-        // 🔥 Generate token WITH tenantId
+        // Generate token WITH tenantId
         String token = jwtService.generateToken(
                 user.getEmail(),
                 user.getTenant().getId()
