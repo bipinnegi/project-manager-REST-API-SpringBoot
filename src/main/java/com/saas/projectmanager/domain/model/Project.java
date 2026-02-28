@@ -19,8 +19,8 @@ public class Project extends BaseEntity {
     @Column(length = 1024)
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
 
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name ="tenant_id", nullable = false)
     private Tenant tenant;
 
