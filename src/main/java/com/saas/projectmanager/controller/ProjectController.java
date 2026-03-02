@@ -1,7 +1,7 @@
 package com.saas.projectmanager.controller;
 
-import com.saas.projectmanager.domain.model.Project;
 import com.saas.projectmanager.dto.ProjectCreateRequest;
+import com.saas.projectmanager.dto.ProjectResponse;
 import com.saas.projectmanager.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +20,7 @@ public class ProjectController {
      * Create new project (Tenant automatically injected from JWT)
      */
     @PostMapping
-    public Project createProject(@RequestBody ProjectCreateRequest request) {
+    public ProjectResponse createProject(@RequestBody ProjectCreateRequest request) {
         return projectService.createProject(
                 request.getName(),
                 request.getDescription()
@@ -31,7 +31,7 @@ public class ProjectController {
      * Get all projects for current tenant
      */
     @GetMapping
-    public List<Project> getAllProjects() {
+    public List<ProjectResponse> getAllProjects() {
         return projectService.getAllProjects();
     }
 
@@ -39,7 +39,7 @@ public class ProjectController {
      * Get single project by ID (Tenant ownership validated in service)
      */
     @GetMapping("/{id}")
-    public Project getProjectById(@PathVariable UUID id) {
+    public ProjectResponse getProjectById(@PathVariable UUID id) {
         return projectService.getProjectById(id);
     }
 
