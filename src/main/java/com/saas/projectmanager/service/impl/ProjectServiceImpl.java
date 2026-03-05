@@ -8,11 +8,11 @@ import com.saas.projectmanager.repository.TenantRepository;
 import com.saas.projectmanager.service.ProjectService;
 import com.saas.projectmanager.tenant.TenantContext;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -45,7 +45,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<ProjectResponse> getAllProjects() {
+    public Page<ProjectResponse> getAllProjects(Pageable pageable) {
 
         UUID tenantId = TenantContext.getCurrentTenant();
 
@@ -53,10 +53,10 @@ public class ProjectServiceImpl implements ProjectService {
             throw new RuntimeException("Tenant not found in context");
         }
 
-        return projectRepository.findByTenantId(tenantId)
-                .stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+        Page<Project> projectPage =
+                projectRepository.findByTenantId(tenantId, pageable);
+
+        return projectPage.map(this::mapToResponse);
     }
 
     @Override

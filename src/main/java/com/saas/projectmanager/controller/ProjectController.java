@@ -4,9 +4,10 @@ import com.saas.projectmanager.dto.ProjectCreateRequest;
 import com.saas.projectmanager.dto.ProjectResponse;
 import com.saas.projectmanager.service.ProjectService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -28,11 +29,13 @@ public class ProjectController {
     }
 
     /**
-     * Get all projects for current tenant
+     * Get paginated projects for current tenant
+     * Example:
+     * /api/projects?page=0&size=5&sort=name,asc
      */
     @GetMapping
-    public List<ProjectResponse> getAllProjects() {
-        return projectService.getAllProjects();
+    public Page<ProjectResponse> getAllProjects(Pageable pageable) {
+        return projectService.getAllProjects(pageable);
     }
 
     /**
