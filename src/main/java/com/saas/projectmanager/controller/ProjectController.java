@@ -36,7 +36,8 @@ public class ProjectController {
      * /api/projects?page=0&size=5&sort=name,asc
      */
     @GetMapping
-    public Page<ProjectResponse> getAllProjects(Pageable pageable) {
+    public Page<ProjectResponse> getAllProjects(Pageable pageable)
+    {
         return projectService.getAllProjects(pageable);
     }
 
@@ -44,7 +45,8 @@ public class ProjectController {
      * Get single project by ID (Tenant ownership validated in service)
      */
     @GetMapping("/{id}")
-    public ProjectResponse getProjectById(@PathVariable UUID id) {
+    public ProjectResponse getProjectById(@PathVariable UUID id)
+    {
         return projectService.getProjectById(id);
     }
 

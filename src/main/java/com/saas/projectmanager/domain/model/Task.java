@@ -20,7 +20,8 @@ public class Task extends BaseEntity {
     private String description;
 
     @Enumerated(EnumType.STRING)
-    private TaskStatus status;
+    @Column(nullable = false)
+    private TaskStatus status = TaskStatus.TODO;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", nullable = false)
