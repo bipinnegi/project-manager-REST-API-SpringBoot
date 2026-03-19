@@ -2,6 +2,7 @@ package com.saas.projectmanager.service.impl;
 
 import com.saas.projectmanager.domain.model.Project;
 import com.saas.projectmanager.domain.model.Task;
+import com.saas.projectmanager.domain.valueobject.TaskStatus;
 import com.saas.projectmanager.dto.TaskCreateRequest;
 import com.saas.projectmanager.dto.TaskResponse;
 import com.saas.projectmanager.repository.ProjectRepository;
@@ -84,6 +85,23 @@ public class TaskServiceImpl implements TaskService {
         task.setTitle(request.getTitle());
         task.setDescription(request.getDescription());
         task.setStatus(request.getStatus());
+
+        return mapToResponse(taskRepository.save(task));
+    }
+    @Override
+    public TaskResponse updateTaskStatus(UUID taskId, TaskStatus status) {
+
+        UUID tenantId = TenantContext.getCurrentTenant();
+
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+
+        // Tenant validation
+        if (!task.getProject().getTenant().getId().equals(tenantId)) {
+            throw new RuntimeException("Access denied");
+        }
+
+        task.setStatus(status);
 
         return mapToResponse(taskRepository.save(task));
     }

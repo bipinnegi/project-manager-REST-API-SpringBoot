@@ -1,5 +1,6 @@
 package com.saas.projectmanager.service;
 
+import com.saas.projectmanager.domain.valueobject.TaskStatus;
 import com.saas.projectmanager.dto.TaskCreateRequest;
 import com.saas.projectmanager.dto.TaskResponse;
 
@@ -15,6 +16,7 @@ public interface TaskService {
     TaskResponse getTaskById(UUID taskId);
 
     TaskResponse updateTask(UUID taskId, TaskCreateRequest request);
-
+    TaskResponse updateTaskStatus(UUID taskId, TaskStatus status);
     void deleteTask(UUID taskId);
+
 }

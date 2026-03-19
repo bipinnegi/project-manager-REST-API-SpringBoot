@@ -2,6 +2,7 @@ package com.saas.projectmanager.controller;
 
 import com.saas.projectmanager.dto.TaskCreateRequest;
 import com.saas.projectmanager.dto.TaskResponse;
+import com.saas.projectmanager.dto.TaskStatusUpdateRequest;
 import com.saas.projectmanager.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -45,6 +46,15 @@ public class TaskController {
             @RequestBody TaskCreateRequest request
     ) {
         return taskService.updateTask(taskId, request);
+    }
+
+    @PatchMapping("/tasks/{taskId}/status")
+    @PreAuthorize("hasRole('OWNER')")
+    public TaskResponse updateTaskStatus(
+            @PathVariable UUID taskId,
+            @RequestBody TaskStatusUpdateRequest request
+    ) {
+        return taskService.updateTaskStatus(taskId, request.getStatus());
     }
 
     @DeleteMapping("/tasks/{taskId}")
