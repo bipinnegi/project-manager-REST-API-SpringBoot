@@ -1,15 +1,11 @@
 package com.saas.projectmanager.controller.auth;
 
-import com.saas.projectmanager.dto.AuthResponse;
-import com.saas.projectmanager.dto.LoginRequest;
-import com.saas.projectmanager.dto.RegisterRequest;
+import com.saas.projectmanager.dto.*;
 import com.saas.projectmanager.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -25,6 +21,17 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
+    }
+
+    @PostMapping("/invite")
+    @PreAuthorize("hasRole('OWNER')")
+    public String sendInvite(@RequestBody InviteRequest request) {
+        return authService.sendInvite(request.getEmail());
+    }
+
+    @PostMapping("/accept-invite")
+    public AuthResponse acceptInvite(@RequestBody AcceptInviteRequest request) {
+        return authService.acceptInvite(request);
     }
 
 

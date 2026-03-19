@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -24,6 +25,7 @@ public class ProjectController {
     @PostMapping
     @PreAuthorize("hasRole('OWNER')")
     public ProjectResponse createProject(@RequestBody ProjectCreateRequest request) {
+       
         return projectService.createProject(
                 request.getName(),
                 request.getDescription()
