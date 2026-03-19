@@ -12,4 +12,9 @@ public interface TaskService {
 
     List<TaskResponse> getTasksByProject(UUID projectId);
 
+    TaskResponse getTaskById(UUID taskId);
+
+    TaskResponse updateTask(UUID taskId, TaskCreateRequest request);
+
+    void deleteTask(UUID taskId);
 }

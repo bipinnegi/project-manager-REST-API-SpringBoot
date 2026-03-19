@@ -27,27 +27,19 @@ public class TaskServiceImpl implements TaskService {
 
         UUID tenantId = TenantContext.getCurrentTenant();
 
-        if (tenantId == null) {
-            throw new RuntimeException("Tenant not found in context");
-        }
-
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
 
-        // Tenant ownership validation
-        if (!project.getTenant().getId().equals(tenantId)) {
-            throw new RuntimeException("Access denied");
-        }
+        validateTenant(project, tenantId);
 
         Task task = Task.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
+                .status(request.getStatus())
                 .project(project)
                 .build();
 
-        Task savedTask = taskRepository.save(task);
-
-        return mapToResponse(savedTask);
+        return mapToResponse(taskRepository.save(task));
     }
 
     @Override
@@ -58,14 +50,64 @@ public class TaskServiceImpl implements TaskService {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
 
-        if (!project.getTenant().getId().equals(tenantId)) {
-            throw new RuntimeException("Access denied");
-        }
+        validateTenant(project, tenantId);
 
         return taskRepository.findByProjectId(projectId)
                 .stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public TaskResponse getTaskById(UUID taskId) {
+
+        UUID tenantId = TenantContext.getCurrentTenant();
+
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+
+        validateTenant(task.getProject(), tenantId);
+
+        return mapToResponse(task);
+    }
+
+    @Override
+    public TaskResponse updateTask(UUID taskId, TaskCreateRequest request) {
+
+        UUID tenantId = TenantContext.getCurrentTenant();
+
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+
+        validateTenant(task.getProject(), tenantId);
+
+        task.setTitle(request.getTitle());
+        task.setDescription(request.getDescription());
+        task.setStatus(request.getStatus());
+
+        return mapToResponse(taskRepository.save(task));
+    }
+
+    @Override
+    public void deleteTask(UUID taskId) {
+
+        UUID tenantId = TenantContext.getCurrentTenant();
+
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+
+        validateTenant(task.getProject(), tenantId);
+
+        taskRepository.delete(task);
+    }
+
+    /**
+     * Tenant validation
+     */
+    private void validateTenant(Project project, UUID tenantId) {
+        if (tenantId == null || !project.getTenant().getId().equals(tenantId)) {
+            throw new RuntimeException("Access denied");
+        }
     }
 
     private TaskResponse mapToResponse(Task task) {

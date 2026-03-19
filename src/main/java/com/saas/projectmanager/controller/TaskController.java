@@ -7,21 +7,49 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/projects/{projectId}/tasks")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class TaskController {
+
     private final TaskService taskService;
 
-    @PostMapping
+    @PostMapping("/projects/{projectId}/tasks")
     @PreAuthorize("hasRole('OWNER')")
-    public TaskResponse createTask(@PathVariable UUID projectId,
-                                   @RequestBody TaskCreateRequest request
+    public TaskResponse createTask(
+            @PathVariable UUID projectId,
+            @RequestBody TaskCreateRequest request
     ) {
         return taskService.createTask(projectId, request);
     }
 
+    @GetMapping("/projects/{projectId}/tasks")
+    @PreAuthorize("hasAnyRole('OWNER','MEMBER')")
+    public List<TaskResponse> getTasksByProject(@PathVariable UUID projectId) {
+        return taskService.getTasksByProject(projectId);
+    }
 
+    @GetMapping("/tasks/{taskId}")
+    @PreAuthorize("hasAnyRole('OWNER','MEMBER')")
+    public TaskResponse getTaskById(@PathVariable UUID taskId) {
+        return taskService.getTaskById(taskId);
+    }
+
+    @PutMapping("/tasks/{taskId}")
+    @PreAuthorize("hasRole('OWNER')")
+    public TaskResponse updateTask(
+            @PathVariable UUID taskId,
+            @RequestBody TaskCreateRequest request
+    ) {
+        return taskService.updateTask(taskId, request);
+    }
+
+    @DeleteMapping("/tasks/{taskId}")
+    @PreAuthorize("hasRole('OWNER')")
+    public void deleteTask(@PathVariable UUID taskId) {
+        taskService.deleteTask(taskId);
+    }
 }
