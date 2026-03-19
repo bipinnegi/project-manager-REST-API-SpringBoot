@@ -272,7 +272,6 @@ Authorization: Bearer <token>
 | Task Module      | ✅      |
 | PATCH Support    | ✅      |
 | RBAC             | ✅      |
-| Activity Logs    | ✅      |
 
 ---
 
